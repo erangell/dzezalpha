@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "hyperdrive": "^10.21.0",
+    "hyperspace": "^3.19.0"
+  }
+}
