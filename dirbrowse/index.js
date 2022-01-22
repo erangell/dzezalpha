@@ -21,10 +21,9 @@ async function main(drivekeyStr) {
     client.replicate(drive.metadata)
 
     http.createServer( async (req, res) => {
-        serveDrive(drive, req, res)
-        
+        serveDrive(drive, req, res)    
     }).listen(8080)
-    
+  
     console.log('Open web browser to http://localhost:8080')
 }
 
@@ -41,30 +40,40 @@ async function serveDrive (drive, req, res)
     unencpath = decodeURI(path)
     console.log("Decoded:",unencpath)
     
-    const st = await drive.promises.stat(unencpath)
+    try
+    {
+        //const needed to be changed to var for st to be hoisted
+        var st = await drive.promises.stat(unencpath)
+    }
+    catch (e)
+    {
+        res.writeHead(404).end('404: File not found (check for special characters) - click BACK button')
+        return
+    }
+
     //console.log(st)
     //console.log('File?',st.isFile())
     //console.log('Dir?',st.isDirectory())
 
     if (st.isDirectory())
     {
-        if (!path.endsWith('/'))
+        if (!unencpath.endsWith('/'))
         {
-            return res.writeHead(303, {Location: path + '/' }).end()
+            return res.writeHead(303, {Location: unencpath + '/' }).end()
         }
-        const subfiles = await drive.promises.readdir(path)
+        const subfiles = await drive.promises.readdir(unencpath)
 
-        //console.log('Directory of: ',path)
+        //console.log('Directory of: ',unencpath)
         //console.log(subfiles.join('\n'))
         
         const html = `<html><body>
-            ${path !== '/' ? `
+            ${unencpath !== '/' ? `
                 <div><a href="..">..</a></div>
             ` : ''}
             ${subfiles.map( file => {
-              return `
-              <div><a href="${file}">${file}</a></div>
-              `}).join('')  
+            return `
+            <div><a href="${file}">${file}</a></div>
+            `}).join('')  
             }
         </body></html>`
 

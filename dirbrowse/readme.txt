@@ -9,3 +9,7 @@ npm install hyperdrive
 npm run test
 
 node index.js
+
+
+Note: hyperspace daemon must be running.  To start it: hyp daemon start
+
