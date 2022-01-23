@@ -1,3 +1,5 @@
+Code is based on this video: https://www.youtube.com/watch?v=RymFCytTWz8&t=1790s
+
 To set up:
 
 npm install --save-dev jest
