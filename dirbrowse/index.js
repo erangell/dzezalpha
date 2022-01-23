@@ -37,6 +37,8 @@ async function getvaultadrs(drivekeyStr, userpick) {
     //For a hyperbee you would replicate bee.feed
     client.replicate(drive.metadata)
 
+    var vaultadrs=drivekeyStr   //default vault if not overriden below
+
     //readdir() will await ready() before it runs
     const dirlist = await drive.promises.readdir('/')
     ix=-1
@@ -66,20 +68,25 @@ async function getvaultadrs(drivekeyStr, userpick) {
             console.log("User selected: ",userdata)
             console.log("vname",userdata.vname)
             console.log("vadrs",userdata.vadrs)
-            main(userdata.vadrs)
+            vaultadrs = userdata.vadrs
+            
         }
         catch (e)
         {
             console.log("JSON Parse Exception",e)
         }
+
+        main(vaultadrs)
     }
 }
 
 // Load user's selected vault from a hyperdrive that has vault.json
-// 2nd parameter is which vault from the file to choose: 0,1,2 or 3
+// 2nd parameter is which vault from the file to choose: 0,1,2,3 or 4
+//Todo: querystring variable to select vault
 getvaultadrs(
     '27091469efe686137e6a54adc4378e9a866721f93821ad9c490a7e349c0dbca3',0)
 
+//The following can now be accessed using the command above
 //main('63a37d55e81f975f3fc0ca36a1ee458436e90da13236eba259aba51ee72a69e1')
 //main('27091469efe686137e6a54adc4378e9a866721f93821ad9c490a7e349c0dbca3')
 //main('d488a3a3b8d66e7504170ebd61d9c0e62794d6dea15da2db24371aa460eaa8b2')
