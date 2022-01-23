@@ -6,10 +6,13 @@ npm install hyperspace
 
 npm install hyperdrive
 
+npm install hyperbee
+
 npm run test
 
 node index.js
 
 
 Note: hyperspace daemon must be running.  To start it: hyp daemon start
+
 

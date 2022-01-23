@@ -3,6 +3,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "hyperbee": "^1.7.0",
     "hyperdrive": "^10.21.0",
     "hyperspace": "^3.19.0"
   },

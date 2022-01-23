@@ -10,10 +10,6 @@ async function main(drivekeyStr) {
     //await drive.promises.ready()
     //console.log(drive.key)
 
-    //readdir() will await ready() before it runs
-    //const dirlist = await drive.promises.readdir('/')
-    //console.log(dirlist)
-
     //If the drive is not in the local cache, need to replicate the metadata core
     //of the hyperdrive over the network.  Metadata has all the information for each file.
     //The contents of the file are in the content hypercore.
@@ -23,12 +19,69 @@ async function main(drivekeyStr) {
     http.createServer( async (req, res) => {
         serveDrive(drive, req, res)    
     }).listen(8080)
-  
+    
     console.log('Open web browser to http://localhost:8080')
 }
 
+async function getvaultadrs(drivekeyStr, userpick) {
+    const key = Buffer.from(drivekeyStr,'hex')
+    const client = new HyperspaceClient()
+    const drive = new hyperdrive(client.corestore(), key)
+    
+    //await drive.promises.ready()
+    //console.log(drive.key)
+
+    //If the drive is not in the local cache, need to replicate the metadata core
+    //of the hyperdrive over the network.  Metadata has all the information for each file.
+    //The contents of the file are in the content hypercore.
+    //For a hyperbee you would replicate bee.feed
+    client.replicate(drive.metadata)
+
+    //readdir() will await ready() before it runs
+    const dirlist = await drive.promises.readdir('/')
+    ix=-1
+    for (i=0; i<dirlist.length; i++)
+    {
+        if (dirlist[i]==="vault.json")
+        {    ix=i
+             break
+        }
+    }
+    if (ix >= 0)
+    {
+        const vaults = await drive.promises.readFile("/vault.json")
+        console.log("File contents:",vaults.toString())
+        
+        try
+        {
+            const vdata = JSON.parse(vaults.toString())
+            //console.log(vdata)
+            console.log("Vaults found in JSON file:")
+            for (i=0; i<vdata.vaults.length; i++)
+            {
+                console.log(i,":",vdata.vaults[i])
+            }
+
+            const userdata=vdata.vaults[userpick]
+            console.log("User selected: ",userdata)
+            console.log("vname",userdata.vname)
+            console.log("vadrs",userdata.vadrs)
+            main(userdata.vadrs)
+        }
+        catch (e)
+        {
+            console.log("JSON Parse Exception",e)
+        }
+    }
+}
+
+// Load user's selected vault from a hyperdrive that has vault.json
+// 2nd parameter is which vault from the file to choose: 0,1,2 or 3
+getvaultadrs(
+    '27091469efe686137e6a54adc4378e9a866721f93821ad9c490a7e349c0dbca3',0)
+
 //main('63a37d55e81f975f3fc0ca36a1ee458436e90da13236eba259aba51ee72a69e1')
-main('27091469efe686137e6a54adc4378e9a866721f93821ad9c490a7e349c0dbca3')
+//main('27091469efe686137e6a54adc4378e9a866721f93821ad9c490a7e349c0dbca3')
 //main('d488a3a3b8d66e7504170ebd61d9c0e62794d6dea15da2db24371aa460eaa8b2')
 //main('ac8a1643d1d4553ad869cfaf60d15fb86ed1b95f1d8354b16b7cf06108e29723')
 //main('b24c0ccfed0d3e8543a4779afd4a5351dd63dea6ad105d4247369b43078630af')
